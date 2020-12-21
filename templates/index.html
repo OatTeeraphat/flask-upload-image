@@ -46,23 +46,29 @@
             dropZoneClickTitle : '<button type="button" class="btn btn-primary btn-lg btn-block btn-newimage" id="upload-file-btn" >เพิ่มรูปภาพใหม่</button>',
             browseClass: "btn btn-primary btn-lg",
             previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
-            overwriteInitial: false,
 
+            overwriteInitial: false,
             initialPreviewAsData: true,
+
+            {% if preview is not none %}
             initialPreview: [
-                //"http://lorempixel.com/1920/1080/transport/1",
-                // "http://lorempixel.com/1920/1080/transport/2",
-                // "http://lorempixel.com/1920/1080/transport/3"
+                {% for item in preview %}
+                    "{{item}}",
+                {% endfor %}
             ],
+            {% endif %}
+
+            {% if preview_config is not none %}
             initialPreviewConfig: [
-                //{caption: "transport-1.jpg", size: 329892, width: "120px", url: "{$url}", key: 1},
-                // {caption: "transport-2.jpg", size: 872378, width: "120px", url: "{$url}", key: 2},
-                // {caption: "transport-3.jpg", size: 632762, width: "120px", url: "{$url}", key: 3}
+                {% for item in preview_config %}
+                    {caption : "{{item['caption']}}", url: "{{item['url']}}", key: "{{item['key']}}"},
+                {% endfor %}
             ],
+            {% endif %}
             
-            showUpload:false,
-            showBrowse:false,
-            showClose:false,
+            showUpload: false,
+            showBrowse: false,
+            showClose: false,
             showCancel: false,
             showRemove: false,
             showUpload: false,
@@ -78,14 +84,20 @@
 
         });
 
+    $("#file-3").on("filepredelete", function(jqXHR,index) {
+        console.log('delete')
+        $('.file-preview-frame[data-fileindex=init_'+index+"]").fadeOut(300);
+    }); 
+
     $('#upload-file-btn').click(function() {
 
         var form_data = new FormData($('#upload-file')[0]);
         console.log(form_data)
-
+        
+        // it's can be pass `line_id` value by params query
         $.ajax({
             type: 'POST',
-            url: '/upload',
+            url: '/upload?line_id=12345678',
             data: form_data,
             contentType: false,
             cache: false,
@@ -133,6 +145,8 @@
             background: #fff;
             color: #f50404;
             border-color: #f90404;
+            padding: 5px;
+            font-size: 10px;
         }
         .file-drop-zone {
             border: 0;
