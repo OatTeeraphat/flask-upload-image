@@ -43,12 +43,21 @@
             theme: 'fas',
 
             dropZoneTitle: "โปรดเลือกรูปภาพที่ต้องการอัพโหลด",
-            dropZoneClickTitle : '<button type="button" class="btn btn-primary btn-lg btn-block btn-newimage" id="upload-file-btn" >เพิ่มรูปภาพใหม่</button>',
+            dropZoneClickTitle : '<button type="button" class="btn btn-primary btn-lg btn-block btn-newimage">เพิ่มรูปภาพใหม่</button>',
             browseClass: "btn btn-primary btn-lg",
             previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
 
             overwriteInitial: false,
             initialPreviewAsData: true,
+            showBrowse: true,
+            showClose: false,
+            showCancel: false,
+            showRemove: false,
+            showUpload: false,
+            showCaption: false,
+            showUploadStats:false,
+            dropZoneEnabled:true,
+            browseOnZoneClick:true,
 
             {% if preview is not none %}
             initialPreview: [
@@ -66,21 +75,10 @@
             ],
             {% endif %}
             
-            showUpload: false,
-            showBrowse: false,
-            showClose: false,
-            showCancel: false,
-            showRemove: false,
-            showUpload: false,
-            showCaption: false,
-            showUploadStats:false,
-            showUploadedThumbs : false,
-            dropZoneEnabled:true,
-            browseOnZoneClick:true,
-            
             maxFileCount: 9,
             validateInitialCount: true,
             allowedFileExtensions: ['jpg', 'png', 'jpeg', 'HEIC'],
+            uploadUrl : "/"
 
         });
 
@@ -98,7 +96,7 @@
         $.ajax({
             type: 'POST',
             url: '/upload?line_id=12345678',
-            data: form_data,
+            data: form_data,    
             contentType: false,
             cache: false,
             processData: false,
@@ -114,6 +112,7 @@
 
     </script>
 
+
     <style>
         body{
             font-size: 14px;
@@ -123,6 +122,11 @@
             background-color: #2c2f8c;
             border-color: #2c2f8c;
             padding: 8px;
+        }
+        .file-input .btn-file {
+            width: 100%;
+            background-color: #fff;
+            color: #2c2f8c;
         }
         .btn-newimage{
             background-color: #fff;

@@ -14,19 +14,19 @@ def upload_page():
 @app.route("/edit", methods=["GET"])
 def edit_page():
     
-    old_list = [
+    preview = [
         "http://lorempixel.com/1920/1080/transport/1",
         "http://lorempixel.com/1920/1080/transport/2",
         "http://lorempixel.com/1920/1080/transport/3"
     ]
 
-    old_list_config = [
+    preview_config = [
         {"caption": "transport-1.jpg", "url": "http://0.0.0.0:5000/delete?id=1", "key": 1},
         {"caption": "transport-2.jpg", "url": "http://0.0.0.0:5000/delete?id=2", "key": 2},
         {"caption": "transport-3.jpg", "url": "http://0.0.0.0:5000/delete?id=3", "key": 3}
     ]
 
-    return render_template("index.html", preview=old_list, preview_config=old_list_config);
+    return render_template("index.html", preview=preview, preview_config=preview_config);
 
 
 @app.route("/delete", methods=["POST"])
