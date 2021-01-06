@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.3.0/font-awesome-animation.min.css" />
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/js/plugins/piexif.min.js" type="text/javascript"></script>
@@ -16,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/js/fileinput.min.js"></script>
+    
 
 </head>
 <body>
@@ -32,7 +34,15 @@
             </div>
         </form>
         <div class="fixed-bottom p-3">
-            <button type="button" class="btn btn-primary btn-lg btn-block" id="upload-file-btn" >อัพโหลดรูปภาพ</button>
+            <button type="button" class="btn btn-primary btn-lg btn-block btn-submit" id="upload-file-btn" >อัพโหลดรูปภาพ</button>
+        </div>
+    </div>
+
+    <div class="please-wait d-none">
+        <div class="warpper">
+            <div class="fa-3x">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
         </div>
     </div>
 
@@ -49,7 +59,7 @@
 
             overwriteInitial: false,
             initialPreviewAsData: true,
-            showBrowse: true,
+            showBrowse: false,
             showClose: false,
             showCancel: false,
             showRemove: false,
@@ -58,6 +68,22 @@
             showUploadStats:false,
             dropZoneEnabled:true,
             browseOnZoneClick:true,
+
+            layoutTemplates : {
+            preview:
+                '<div class="file-preview {class}">\n' +
+                '    {close}\n' +
+                '    <div class="close fileinput-remove">×</div>\n' +
+                '    <div class="{dropClass}">\n' +
+                '    <div class="file-preview-thumbnails">\n' +
+                '    </div>\n' +
+                '    <div class="file-add"><div class="file-add-btn">+</div></div>' +
+                '    <div class="clearfix"></div>' +
+                '    <div class="file-preview-status text-center text-success"></div>\n' +
+                '    <div class="kv-fileinput-error"></div>\n' +
+                '    </div>\n' +
+                '</div>',
+            },
 
             {% if preview is not none %}
             initialPreview: [
@@ -82,31 +108,36 @@
 
         });
 
-    $("#file-3").on("filepredelete", function(jqXHR,index) {
-        console.log('delete')
-        $('.file-preview-frame[data-fileindex=init_'+index+"]").fadeOut(300);
-    }); 
+        $("#file-3").on("filepredelete", function(jqXHR,index) {
+            console.log('delete')
+            $('.file-preview-frame[data-fileindex=init_'+index+"]").fadeOut(300);
+        }); 
 
-    $('#upload-file-btn').click(function() {
 
-        var form_data = new FormData($('#upload-file')[0]);
-        console.log(form_data)
-        
-        // it's can be pass `line_id` value by params query
-        $.ajax({
-            type: 'POST',
-            url: '/upload?line_id=12345678',
-            data: form_data,    
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function(data) {
-                console.log('Success!');
-                // close line liff here
-            },
+        $('#upload-file-btn').click(function() {
+
+            var form_data = new FormData($('#upload-file')[0]);
+            console.log(form_data)
+            $(".please-wait").removeClass('d-none')
+            
+            // it's can be pass `line_id` value by params query
+            $.ajax({
+                type: 'POST',
+                url: '/upload?line_id=12345678',
+                data: form_data,    
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function(data) {
+                    console.log('Success!');
+                    // close line liff here
+                },
+                cache: false
+            }).fail(function (jqXHR, textStatus, error) {
+                $(".please-wait").addClass('d-none');
+            });
+
         });
-
-    });
 
     });
 
@@ -119,20 +150,34 @@
         }
         .btn{
             font-size: 18px;
-            background-color: #2c2f8c;
-            border-color: #2c2f8c;
+            background-color: #0f0e9f;
+            border-color: #0f0e9f;
             padding: 8px;
+            position: relative;
+            top: 0;
+            transition : all 0.15s ease;
+        }
+        .btn-submit{
+            height: 60px;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active{
+            top : 2px
         }
         .file-input .btn-file {
             width: 100%;
             background-color: #fff;
-            color: #2c2f8c;
+            color: #0f0e9f;
         }
         .btn-newimage{
-            background-color: #fff;
-            color: #2c2f8c !important;
+            background-color: #fff !important;
+            color: #0f0e9f !important;
+            border-color: #0f0e9f !important;
+            border-width: 2px;
             box-shadow: none !important;
             margin-top: 15px;
+        }
+        .fileinput-remove{
+            display: none;
         }
         .file-preview .clickable{
             width: 100%;
@@ -141,6 +186,7 @@
         .file-preview{
             display: flex;
             justify-content: center;
+            padding: 20px 0px 20px 27px;
         }
         .kv-file-zoom, .kv-file-upload, .file-drag-handle, .file-upload-indicator{
             display: none;
@@ -158,7 +204,7 @@
             text-align: center;
             vertical-align: middle;
             margin: 0;
-            /* padding: 5px; */
+            padding: 0;
         }
         .file-drop-zone.clickable:hover{
             border: none;
@@ -169,8 +215,8 @@
         .krajee-default.file-preview-frame .kv-file-content{
             background-color: #d8d8d8;
             position: relative;
-            width: 125px !important;
-            height: 125px !important;
+            width: 135px !important;
+            height: 135px !important;
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -192,6 +238,44 @@
             bottom: 7.5px;
             right: 7.5px;
         }
+        .krajee-default.file-preview-frame{
+            padding: 0;
+            box-shadow: none;
+            border: none;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0px 15px 15px 0;
+            box-shadow: none !important;
+        }
+        .file-add-btn {
+            width: 135px;
+            height: 135px;
+            margin: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            border: 2px solid #0f0e9f;
+            color: #0f0e9f;
+            border-radius: 5px;
+        }
+        .file-input-ajax-new .file-add{
+            display: none;
+        }
+        .fixed-bottom{
+            z-index: 99;
+            background-color: #fff;
+            padding-bottom: 25px !important;
+        }
+        .file-drop-zone-title{
+            padding: 80px 30px 80px 0;
+        }
+        .container{
+            padding-top: 5px;
+        }
+        .please-wait{width: 100%;height: 100vh;position: absolute;top: 0;left: 0;right: 0;margin: 0 auto;color: #fff;background: #9e9e9edb;display: flex;justify-content: center;align-items: center;text-align: center;z-index: 100;}
+        .please-wait .warpper{font-size: 1.5em;color: #fff;}
+        .fas {font-size: 1.25em;}
     </style>
 
     <style>
@@ -200,6 +284,7 @@
             .file-preview{
                 display: flex;
                 justify-content: center;
+                margin-bottom: 100px;
             }
             .file-preview-thumbnails {
                 display: block;
