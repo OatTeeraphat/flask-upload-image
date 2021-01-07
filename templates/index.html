@@ -59,31 +59,35 @@
 
             overwriteInitial: false,
             initialPreviewAsData: true,
+            uploadUrl : "/upload?line_id=12345678",
+
+            uploadAsync: false,
+            showUpload: true,
+
             showBrowse: false,
             showClose: false,
             showCancel: false,
             showRemove: false,
-            showUpload: false,
             showCaption: false,
             showUploadStats:false,
             dropZoneEnabled:true,
             browseOnZoneClick:true,
 
             layoutTemplates : {
-            preview:
-                '<div class="file-preview {class}">\n' +
-                '    {close}\n' +
-                '    <div class="close fileinput-remove">×</div>\n' +
-                '    <div class="{dropClass}">\n' +
-                '    <div class="file-preview-thumbnails">\n' +
-                '    </div>\n' +
-                '    <div class="file-add"><div class="file-add-btn">+</div></div>' +
-                '    <div class="clearfix"></div>' +
-                '    <div class="file-preview-status text-center text-success"></div>\n' +
-                '    <div class="kv-fileinput-error"></div>\n' +
-                '    </div>\n' +
-                '</div>',
-            },
+                preview:
+                    '<div class="file-preview {class}">\n' +
+                    '    {close}\n' +
+                    '    <div class="close fileinput-remove">×</div>\n' +
+                    '    <div class="{dropClass}">\n' +
+                    '    <div class="file-preview-thumbnails">\n' +
+                    '    </div>\n' +
+                    '    <div class="file-add"><div class="file-add-btn">+</div></div>' +
+                    '    <div class="clearfix"></div>' +
+                    '    <div class="file-preview-status text-center text-success"></div>\n' +
+                    '    <div class="kv-fileinput-error"></div>\n' +
+                    '    </div>\n' +
+                    '</div>',
+                },
 
             {% if preview is not none %}
             initialPreview: [
@@ -103,40 +107,21 @@
             
             maxFileCount: 9,
             validateInitialCount: true,
-            allowedFileExtensions: ['jpg', 'png', 'jpeg', 'HEIC'],
-            uploadUrl : "/"
+            allowedFileExtensions: ['jpg', 'png', 'jpeg', 'HEIC']
 
         });
 
         $("#file-3").on("filepredelete", function(jqXHR,index) {
-            console.log('delete')
             $('.file-preview-frame[data-fileindex=init_'+index+"]").fadeOut(300);
-        }); 
+        });
 
+        {% if preview is not none %}
+            $('.file-input').removeClass('file-input-ajax-new');
+        {% endif %}
 
         $('#upload-file-btn').click(function() {
-
-            var form_data = new FormData($('#upload-file')[0]);
-            console.log(form_data)
-            $(".please-wait").removeClass('d-none')
-            
-            // it's can be pass `line_id` value by params query
-            $.ajax({
-                type: 'POST',
-                url: '/upload?line_id=12345678',
-                data: form_data,    
-                contentType: false,
-                cache: false,
-                processData: false,
-                success: function(data) {
-                    console.log('Success!');
-                    // close line liff here
-                },
-                cache: false
-            }).fail(function (jqXHR, textStatus, error) {
-                $(".please-wait").addClass('d-none');
-            });
-
+            $(".please-wait").removeClass('d-none');
+            $(".fileinput-upload-button").trigger('click');
         });
 
     });
@@ -147,6 +132,13 @@
     <style>
         body{
             font-size: 14px;
+        }
+        .fileinput-upload-button{
+            position: absolute !important;
+            top: -500px !important;
+        }
+        .kv-upload-progress{
+            display: none !important;
         }
         .btn{
             font-size: 18px;
@@ -241,7 +233,7 @@
         .krajee-default.file-preview-frame{
             padding: 0;
             box-shadow: none;
-            border: none;
+            border: none !important;
             border-radius: 5px;
             overflow: hidden;
             margin: 0px 15px 15px 0;
